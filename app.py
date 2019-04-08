@@ -1,12 +1,9 @@
-from flask import Flask
+from flask import Blueprint
+from flask_restful import Api
+from resources.hello import Hello
 
-app = Flask(__name__)
+api_bp = Blueprint('api', __name__)
+api = Api(api_bp)
 
-
-@app.route("/")
-def hello():
-    return "Testing Testing"
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# Route
+api.add_resource(Hello, '/Hello')
