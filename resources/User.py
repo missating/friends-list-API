@@ -33,6 +33,7 @@ class UserResource(Resource):
         db.session.commit()
 
         result = user_schema.dump(user).data
+        del result['password']
 
         return {"status": 'success', 'data': result}, 201
 
@@ -41,15 +42,17 @@ class UserResource(Resource):
         if not json_data:
             return {'message': 'No data provided'}, 400
         # Validate and deserialize input
-        data, errors = user_schema.load(json_data)
+        data, errors = user_schema.load(json_data, partial=True)
         if errors:
             return errors, 422
         user = User.query.get(user_id)
         if not user:
             return {'message': 'A user with that Id is not found'}, 400
         user.name = data['name']
+        db.session.add(user)
         db.session.commit()
 
         result = user_schema.dump(user).data
+        del result['password']
 
-        return {"status": 'success', 'data': result}, 204
+        return {"status": 'success', 'data': result}, 200
