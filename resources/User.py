@@ -7,7 +7,31 @@ users_schema = UserSchema(many=True)
 
 
 class UserResource(Resource):
-    def get_user(self):
+    def get(self):
         users = User.query.all()
         users = users_schema.dump(users).data
         return {'status': 'success', 'data': users}, 200
+
+    def post(self):
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No data provided'}, 400
+        # Validate and deserialize input
+        data, errors = user_schema.load(json_data)
+        if errors:
+            return errors, 422
+        user = User.query.filter_by(email=data['email']).first()
+        if user:
+            return {'message': 'A user with this email already exist'}, 400
+        user = User(
+            name=json_data['name'],
+            email=json_data['email'],
+            password=json_data['password'],
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        result = user_schema.dump(user).data
+
+        return {"status": 'success', 'data': result}, 201
