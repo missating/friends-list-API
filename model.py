@@ -8,26 +8,13 @@ ma = Marshmallow()
 db = SQLAlchemy()
 
 
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(250), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
-        self.password = password
-
-
 class Friend(db.Model):
     __tablename__ = 'friends'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True, nullable=False)
     age = db.Column(db.String(16), nullable=False)
     creation_date = db.Column(
-        db.TIMESTAMP, 
+        db.TIMESTAMP,
         server_default=db.func.current_timestamp(),
         nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey(
@@ -39,6 +26,19 @@ class Friend(db.Model):
         self.name = name
         self.age = age
         self.user_id = user_id
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    email = db.Column(db.String(250), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+
+    def __init__(self, name, email, password):
+        self.name = name
+        self.email = email
+        self.password = password
 
 
 class UserSchema(ma.Schema):
