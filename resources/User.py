@@ -1,5 +1,5 @@
 from flask import request
-from flask_restful import Resource
+from flask_restful import Resource, abort, reqparse
 from model import db, User, UserSchema
 
 user_schema = UserSchema()
@@ -35,3 +35,21 @@ class UserResource(Resource):
         result = user_schema.dump(user).data
 
         return {"status": 'success', 'data': result}, 201
+
+    def put(self, user_id):
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No data provided'}, 400
+        # Validate and deserialize input
+        data, errors = user_schema.load(json_data)
+        if errors:
+            return errors, 422
+        user = User.query.get(user_id)
+        if not user:
+            return {'message': 'A user with that Id is not found'}, 400
+        user.name = data['name']
+        db.session.commit()
+
+        result = user_schema.dump(user).data
+
+        return {"status": 'success', 'data': result}, 204

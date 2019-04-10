@@ -6,4 +6,5 @@ api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 # Route
-api.add_resource(UserResource, '/user')
+api.add_resource(UserResource, '/user', endpoint="users")
+api.add_resource(UserResource, '/user/<user_id>', endpoint="user")
