@@ -49,10 +49,19 @@ class UserResource(Resource):
         if not user:
             return {'message': 'A user with that Id is not found'}, 400
         user.name = data['name']
-        db.session.add(user)
         db.session.commit()
 
         result = user_schema.dump(user).data
         del result['password']
 
         return {"status": 'success', 'data': result}, 200
+
+    def delete(self, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return {'message': 'A user with that Id is not found'}, 400
+        db.session.delete(user)
+        db.session.commit()
+
+        return {"status": 'success',  'message': 'User sucessfully deleted'},
+        200
