@@ -12,6 +12,11 @@ class UserResource(Resource):
         users = users_schema.dump(users).data
         return {'status': 'success', 'data': users}, 200
 
+    def get(self, user_id):
+        users = User.query.one()
+        user = users_schema.dump(user).data
+        return {'status': 'success', 'data': user}, 200
+
     def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
