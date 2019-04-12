@@ -12,11 +12,6 @@ class UserResource(Resource):
         users = users_schema.dump(users).data
         return {'status': 'success', 'data': users}, 200
 
-    def get(self, user_id):
-        users = User.query.one()
-        user = users_schema.dump(user).data
-        return {'status': 'success', 'data': user}, 200
-
     def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
@@ -70,3 +65,13 @@ class UserResource(Resource):
 
         return {"status": 'success',  'message': 'User sucessfully deleted'},
         200
+
+    def get(self, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return {'message': 'A user with that Id is not found'}, 400
+
+        result = user_schema.dump(user).data
+        del result['password']
+
+        return {'status': 'success', 'data': result}, 200
