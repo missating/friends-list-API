@@ -7,10 +7,6 @@ users_schema = UserSchema(many=True)
 
 
 class UserResource(Resource):
-    def get(self):
-        users = User.query.all()
-        users = users_schema.dump(users).data
-        return {'status': 'success', 'data': users}, 200
 
     def post(self):
         json_data = request.get_json(force=True)
@@ -36,6 +32,11 @@ class UserResource(Resource):
         del result['password']
 
         return {"status": 'success', 'data': result}, 201
+
+    def get(self):
+        users = User.query.all()
+        users = users_schema.dump(users).data
+        return {'status': 'success', 'data': users}, 200
 
     def put(self, user_id):
         json_data = request.get_json(force=True)
