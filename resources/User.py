@@ -7,18 +7,30 @@ users_schema = UserSchema(many=True)
 
 
 class UserResource(Resource):
+    """Handles user registration"""
 
     def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
-            return {'message': 'No data provided'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'No data provided'
+                }
+            }, 400
         # Validate and deserialize input
         data, errors = user_schema.load(json_data)
         if errors:
             return errors, 422
+
         user = User.query.filter_by(email=data['email']).first()
         if user:
-            return {'message': 'A user with this email already exist'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'A user with the email already exist'
+                }
+            }, 400
         user = User(
             name=json_data['name'],
             email=json_data['email'],
@@ -31,7 +43,40 @@ class UserResource(Resource):
         result = user_schema.dump(user).data
         del result['password']
 
-        return {"status": 'success', 'data': result}, 201
+        return {
+            'status': 'success',
+            'data': result
+        }, 201
+
+    """Handles user login"""
+
+    def post(self):
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No data provided'}, 400
+        # Validate and deserialize input
+        data, errors = user_schema.load(json_data, partial=True)
+        if errors:
+            return errors, 422
+
+        user = User.query.filter_by(email=data['email']).first()
+        if user and user.password_is_valid(password=data['password']):
+            result = user_schema.dump(user).data
+            del result['password']
+
+            return {
+                'status': 'success',
+                'data': result
+            }, 200
+        else:
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'Invalid email or password'
+                }
+            }, 400
+
+    """Handles view all users"""
 
     def get(self):
         users = User.query.all()
