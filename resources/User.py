@@ -53,7 +53,12 @@ class UserResource(Resource):
     def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
-            return {'message': 'No data provided'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'No data provided'
+                }
+            }, 400
         # Validate and deserialize input
         data, errors = user_schema.load(json_data, partial=True)
         if errors:
@@ -81,43 +86,83 @@ class UserResource(Resource):
     def get(self):
         users = User.query.all()
         users = users_schema.dump(users).data
-        return {'status': 'success', 'data': users}, 200
+        return {
+            'status': 'success',
+            'data': users
+        }, 200
+
+    """Handles edit a single user"""
 
     def put(self, user_id):
         json_data = request.get_json(force=True)
         if not json_data:
-            return {'message': 'No data provided'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'No data provided'
+                }
+            }, 400
         # Validate and deserialize input
         data, errors = user_schema.load(json_data, partial=True)
         if errors:
             return errors, 422
+
         user = User.query.get(user_id)
         if not user:
-            return {'message': 'A user with that Id is not found'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'A user with that id is not found'
+                }
+            }, 400
         user.name = data['name']
         db.session.commit()
 
         result = user_schema.dump(user).data
         del result['password']
 
-        return {"status": 'success', 'data': result}, 200
+        return {
+            'status': 'success',
+            'data': result
+        }, 200
+
+    """Handles delete a single user"""
 
     def delete(self, user_id):
         user = User.query.get(user_id)
         if not user:
-            return {'message': 'A user with that Id is not found'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'A user with that id does is not found'
+                }
+            }, 400
         db.session.delete(user)
         db.session.commit()
 
-        return {"status": 'success',  'message': 'User sucessfully deleted'},
-        200
+        return {
+            'status': 'success',
+            'data': {
+                'message': 'User sucessfully deleted'
+            }
+        }, 200
+
+    """Handles get a single user"""
 
     def get(self, user_id):
         user = User.query.get(user_id)
         if not user:
-            return {'message': 'A user with that Id is not found'}, 400
+            return {
+                'status': 'fail',
+                'data': {
+                    'message': 'A user with that id is not found'
+                }
+            }, 400
 
         result = user_schema.dump(user).data
         del result['password']
 
-        return {'status': 'success', 'data': result}, 200
+        return {
+            'status': 'success',
+            'data': result
+        }, 200
