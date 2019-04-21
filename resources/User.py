@@ -1,6 +1,9 @@
 from flask import request
 from flask_restful import Resource, abort
 from model import db, User, UserSchema
+from flask_jwt_extended import (create_access_token, create_refresh_token,
+                                jwt_required, jwt_refresh_token_required,
+                                get_jwt_identity, get_raw_jwt)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -37,16 +40,21 @@ class UserRegistration(Resource):
             password=json_data['password'],
         )
 
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.commit()
 
-        result = user_schema.dump(user).data
-        del result['password']
+            access_token = create_access_token(identity=data['email'])
+            result = user_schema.dump(user).data
+            del result['password']
 
-        return {
-            'status': 'success',
-            'data': result
-        }, 201
+            return {
+                'status': 'success',
+                'data': result,
+                'access_token': access_token,
+            }, 201
+        except:
+            return {'message': 'Something went wrong'}, 500
 
 
 class UserLogin(Resource):
