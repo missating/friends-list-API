@@ -1,12 +1,12 @@
 from flask import request
-from flask_restful import Resource, abort, reqparse
+from flask_restful import Resource, abort
 from model import db, User, UserSchema
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 
-class UserResource(Resource):
+class UserRegistration(Resource):
     """Handles user registration"""
 
     def post(self):
@@ -48,6 +48,8 @@ class UserResource(Resource):
             'data': result
         }, 201
 
+
+class UserLogin(Resource):
     """Handles user login"""
 
     def post(self):
@@ -81,6 +83,8 @@ class UserResource(Resource):
                 }
             }, 400
 
+
+class ViewAllUsers(Resource):
     """Handles view all users"""
 
     def get(self):
@@ -91,6 +95,8 @@ class UserResource(Resource):
             'data': users
         }, 200
 
+
+class UpdateUser(Resource):
     """Handles edit a single user"""
 
     def put(self, user_id):
@@ -126,6 +132,8 @@ class UserResource(Resource):
             'data': result
         }, 200
 
+
+class DeleteUser(Resource):
     """Handles delete a single user"""
 
     def delete(self, user_id):
@@ -147,6 +155,8 @@ class UserResource(Resource):
             }
         }, 200
 
+
+class ViewAUser(Resource):
     """Handles get a single user"""
 
     def get(self, user_id):
