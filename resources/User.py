@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource, abort
 from model import db, User, UserSchema
-from flask_jwt_extended import (create_access_token, create_refresh_token,
+from flask_jwt_extended import (create_access_token,
                                 jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
 
@@ -34,6 +34,7 @@ class UserRegistration(Resource):
                     'message': 'A user with the email already exist'
                 }
             }, 400
+
         user = User(
             name=json_data['name'],
             email=json_data['email'],
@@ -76,12 +77,15 @@ class UserLogin(Resource):
 
         user = User.query.filter_by(email=data['email']).first()
         if user and user.password_is_valid(password=data['password']):
+            access_token = create_access_token(identity=data['email'])
+
             result = user_schema.dump(user).data
             del result['password']
 
             return {
                 'status': 'success',
-                'data': result
+                'data': result,
+                'access_token': access_token,
             }, 200
         else:
             return {
@@ -95,6 +99,7 @@ class UserLogin(Resource):
 class ViewAllUsers(Resource):
     """Handles view all users"""
 
+    @jwt_required
     def get(self):
         users = User.query.all()
         users = users_schema.dump(users).data
