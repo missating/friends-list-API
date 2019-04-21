@@ -1,3 +1,4 @@
 modules
 .vscode
 __pycache__
+.env

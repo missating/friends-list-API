@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from app import api_bp
 from model import db
@@ -7,7 +8,7 @@ from flask_jwt_extended import JWTManager
 def create_app(config_filename):
     app = Flask(__name__)
     app.config.from_object(config_filename)
-    app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
+    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET')
 
     app.register_blueprint(api_bp, url_prefix='/api')
 
