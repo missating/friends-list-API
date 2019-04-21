@@ -90,6 +90,10 @@ class ViewAllUsers(Resource):
     def get(self):
         users = User.query.all()
         users = users_schema.dump(users).data
+
+        for user in users:
+            del user['password']
+
         return {
             'status': 'success',
             'data': users
