@@ -116,6 +116,7 @@ class ViewAllUsers(Resource):
 class UpdateUser(Resource):
     """Handles edit a single user"""
 
+    @jwt_required
     def put(self, user_id):
         json_data = request.get_json(force=True)
         if not json_data:
@@ -153,6 +154,7 @@ class UpdateUser(Resource):
 class DeleteUser(Resource):
     """Handles delete a single user"""
 
+    @jwt_required
     def delete(self, user_id):
         user = User.query.get(user_id)
         if not user:
@@ -176,6 +178,7 @@ class DeleteUser(Resource):
 class ViewAUser(Resource):
     """Handles get a single user"""
 
+    @jwt_required
     def get(self, user_id):
         user = User.query.get(user_id)
         if not user:
