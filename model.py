@@ -40,7 +40,7 @@ class Friend(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship(
-        'User', backref=db.backref('friends', lazy='dynamic'))
+        'User', backref=db.backref('friends'))
 
     def __init__(self, name, age, user_id):
         self.name = name
