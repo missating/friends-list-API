@@ -31,8 +31,8 @@ class User(db.Model):
 class Friend(db.Model):
     __tablename__ = 'friends'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), unique=True, nullable=False)
-    age = db.Column(db.String(16), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
     creation_date = db.Column(
         db.TIMESTAMP,
         server_default=db.func.current_timestamp(),
@@ -59,5 +59,5 @@ class FriendSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     user_id = fields.Integer(required=True)
     name = fields.String(required=True, validate=validate.Length(1))
-    age = fields.String(required=True, validate=validate.Length(1))
+    age = fields.Integer(required=True)
     creation_date = fields.DateTime()
