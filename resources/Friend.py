@@ -50,9 +50,9 @@ class GetAUserFriends(Resource):
     """Handles request to view a user friend list"""
 
     def get(self, user_id):
-        user = Friend.query.filter_by(user_id=user_id)
+        friends = Friend.query.filter_by(user_id=user_id)
 
-        result = friends_schema.dump(user).data
+        result = friends_schema.dump(friends).data
         if not len(result):
             return {
                 'status': 'fail',
