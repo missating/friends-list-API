@@ -9,6 +9,7 @@ friend_schema = FriendSchema()
 class AddFriend(Resource):
     """Handles adding of a friend by a registered user """
 
+    @jwt_required
     def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
@@ -49,6 +50,7 @@ class AddFriend(Resource):
 class GetAUserFriends(Resource):
     """Handles request to view a user friend list"""
 
+    @jwt_required
     def get(self, user_id):
         friends = Friend.query.filter_by(user_id=user_id)
 
